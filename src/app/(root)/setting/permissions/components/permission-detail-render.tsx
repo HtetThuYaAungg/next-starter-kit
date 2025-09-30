@@ -1,16 +1,15 @@
-import { Department } from "@/api-config/services/department";
+import { Permission } from "@/api-config/services/permission";
 import { UniversalDetailsRenderer } from "@/components/details/detail-renderer";
 
-
-interface DepartmentDetailsRenderProps {
-  data: Department;
+interface PermissionDetailsRenderProps {
+  data: Permission;
   customRenderers?: Record<string, (value: any) => React.ReactNode>;
 }
 
-export function DepartmentDetailsRender({
+export function PermissionDetailsRender({
   data,
   customRenderers,
-}: DepartmentDetailsRenderProps) {
+}: PermissionDetailsRenderProps) {
   return (
     <UniversalDetailsRenderer
       data={{

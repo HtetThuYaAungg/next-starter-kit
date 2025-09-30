@@ -23,7 +23,7 @@ import { useMessage } from "@/app/contexts/MessageContext";
 import { useState } from "react";
 import { RoleFormValues } from "../schema/create-role";
 import { Role } from "@/api-config/services/role";
-import { useDeleteRole } from "@/api-config/queries/role";
+import { useDeleteRole, useGetRoleById } from "@/api-config/queries/role";
 import CreateRole from "../create-role";
 import DetailsRole from "../detail-role";
 import { RouteGuard } from "@/components/route-guard";
@@ -42,34 +42,29 @@ export function RoleTableActions<TData>({
     useDeleteRole();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [roleData, setRoleData] = useState<RoleFormValues | null>(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
-  const [roleId, setRoleId] = useState<number | null>(null);
+  const [roleId, setRoleId] = useState<string | null>(null);
+  const [editedDataId, setEditedDataId] = useState<string | null>(null);
 
+  const handleEditRole = (roleId: string) => {
+    setEditedDataId(roleId);
+    setIsDrawerOpen(true);
+  };
   const handleCloseEditRole = () => {
+    setEditedDataId(null);
     setIsDrawerOpen(false);
   };
 
-  const handleCloseDetailsRole = () => {
-    setIsDetailsDrawerOpen(false);
-  };
-
-  const handleEditRole = (role: Role) => {
-    setRoleData({
-      id: role.id,
-      role_code: role.role_code,
-      role_name: role.role_name,
-      permissions: role.permissions,
-    });
-    setIsDrawerOpen(true);
-  };
-
-  const handleDetailRole = (roleId: number) => {
+  const handleDetailRole = (roleId: string) => {
     setRoleId(roleId);
     setIsDetailsDrawerOpen(true);
   };
+  const handleCloseDetailsRole = () => {
+    setRoleId(null);
+    setIsDetailsDrawerOpen(false);
+  };
 
-  const handleDeleteRole = async (id: number) => {
+  const handleDeleteRole = async (id: string) => {
     const loadingId = message.loading("Deleting...", 0);
     try {
       await mutateAsyncDeleteRole(id);
@@ -110,10 +105,10 @@ export function RoleTableActions<TData>({
               <ExternalLink className="mr-2 h-4 w-4 text-blue-500" />
               View Details
             </DropdownMenuItem>
-          </RouteGuard>
+          </RouteGuard> 
           <RouteGuard permissionType="edit">
             <DropdownMenuItem
-              onClick={() => handleEditRole(role)}
+              onClick={() => handleEditRole(role.id)}
               disabled={role.role_code === "SYS_ADMIN"}
             >
               <Pen className="mr-2 h-4 w-4 text-yellow-500" />
@@ -141,7 +136,7 @@ export function RoleTableActions<TData>({
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
         hideDefaultTrigger={true}
-        editedData={roleData}
+        editedDataId={editedDataId}
         onSuccess={handleCloseEditRole}
       />
       {isDetailsDrawerOpen && (
@@ -149,7 +144,7 @@ export function RoleTableActions<TData>({
           open={isDetailsDrawerOpen}
           onOpenChange={setIsDetailsDrawerOpen}
           hideDefaultTrigger={true}
-          userId={roleId}
+          roleId={roleId}
           onSuccess={handleCloseDetailsRole}
         />
       )}

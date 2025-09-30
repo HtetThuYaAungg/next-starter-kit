@@ -12,7 +12,11 @@ import userCreateSchema, {
 import { useEffect, useState } from "react";
 import { useGetAllCommonDepartmentList } from "@/api-config/queries/department";
 import { useGetAllCommonRoleList } from "@/api-config/queries/role";
-import { useCreateUser, useUpdateUser } from "@/api-config/queries/user";
+import {
+  useCreateUser,
+  useGetUserById,
+  useUpdateUser,
+} from "@/api-config/queries/user";
 import { useMessage } from "@/app/contexts/MessageContext";
 import { UserEditFormValues, userEditSchema } from "./schema/edit-user";
 import Modal from "@/components/modal";
@@ -20,14 +24,15 @@ import BottomBtns from "@/components/modal_bottom_btns";
 import { TextInput } from "@/components/form-inputs/text-input";
 import { SelectBox } from "@/components/form-inputs/select-box";
 import { UserTypeOptions } from "@/lib/constants";
+import UserFormSkeleton from "./components/user-form-skeleton";
 
 interface UserCreationFormProps {
   // External control props
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   hideDefaultTrigger?: boolean;
-  onSuccess?: () => void;
-  editedData?: UserEditFormValues | null;
+  onSuccess: () => void;
+  editedDataId?: string | null;
 }
 
 const defaultValues: UserFormValues = {
@@ -56,7 +61,7 @@ export default function CreateUser({
   onOpenChange,
   hideDefaultTrigger,
   onSuccess,
-  editedData,
+  editedDataId,
 }: UserCreationFormProps) {
   const message = useMessage();
   const formId = "user-form";
@@ -76,18 +81,18 @@ export default function CreateUser({
   const { mutateAsync: mutateAsyncUpdateUser, isPending: isPendingUpdateUser } =
     useUpdateUser();
 
-  const currentSchema = editedData ? userEditSchema : userCreateSchema;
+  const {
+    data: editedData,
+    isLoading: isLoadingEditedData,
+    isFetching: isFetchingEditedData,
+  } = useGetUserById(editedDataId || null);
+
+  const currentSchema = editedDataId ? userEditSchema : userCreateSchema;
 
   const form = useForm<UserFormUnionValues>({
     resolver: zodResolver(currentSchema),
-    defaultValues: editedData ? defaultEditValues : defaultValues,
+    defaultValues: editedDataId ? defaultEditValues : defaultValues,
   });
-
-  const handleClose = async () => {
-    if (onSuccess) {
-      onSuccess();
-    }
-  };
 
   // Handle form submission
   const onSubmitCreateUser = async (data: UserFormUnionValues) => {
@@ -109,7 +114,7 @@ export default function CreateUser({
         isEdit ? "Update user successful!" : "Create user successful!"
       );
       form.reset();
-      handleClose();
+      onSuccess();
     } catch (error: any) {
       message.remove(loadingId);
       message.error(error?.response.data.message);
@@ -126,18 +131,22 @@ export default function CreateUser({
   }));
 
   useEffect(() => {
-    if (editedData) {
-      form.reset(editedData);
-    } else {
+    if (editedData && !isLoadingEditedData && !isFetchingEditedData) {
+      form.reset({
+        ...editedData.data,
+        department_code: editedData.data.department.department_code,
+        role_code: editedData.data.role.role_code,
+      });
+    } else if (!editedData && !isLoadingEditedData && !isFetchingEditedData) {
       form.reset(defaultValues);
     }
-  }, [editedData, form]);
+  }, [editedData, isLoadingEditedData, isFetchingEditedData, form]);
 
   return (
     <Modal
-      title={`${editedData ? "Edit User" : "New User Registration"}`}
+      title={`${editedDataId  ? "Edit User" : "New User Registration"}`}
       description={`${
-        editedData
+        editedDataId
           ? "Edit existing user ..."
           : "Create new user for the telco admin portal"
       }`}
@@ -150,141 +159,147 @@ export default function CreateUser({
       width="lg"
       onClose={() => form.reset()}
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={onSuccess}
       hideDefaultTrigger={hideDefaultTrigger}
       bottomButton={
         <BottomBtns
           isPending={isPendingCreateUser || isPendingUpdateUser}
           formId={formId}
           form={form}
-          editedData={!!editedData}
+          editedData={!!editedDataId}
+          handleReset={onSuccess}
+          resetText="Cancel"
         />
       }
     >
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmitCreateUser)}
-          className="space-y-3 py-2"
-          id={formId}
-        >
-          <TextInput
-            label="Email"
-            name="email"
-            placeholder="mgmg@gmail.com"
-            form={form}
-            icon={<Mail className="h-4 w-4" />}
-            withAsterisk
-          />
+        {isLoadingEditedData || isFetchingEditedData || isLoadingCommonDepartmentList || isLoadingCommonRoleList ? (
+          <UserFormSkeleton />
+        ) : (
+          <form
+            onSubmit={form.handleSubmit(onSubmitCreateUser)}
+            className="space-y-3 py-2"
+            id={formId}
+          >
+            <TextInput
+              label="Email"
+              name="email"
+              placeholder="mgmg@gmail.com"
+              form={form}
+              icon={<Mail className="h-4 w-4" />}
+              withAsterisk
+            />
 
-          <TextInput
-            label="Staff-ID"
-            name="staff_id"
-            placeholder="Enter user staff-Id"
-            form={form}
-            withAsterisk
-          />
+            <TextInput
+              label="Staff-ID"
+              name="staff_id"
+              placeholder="Enter user staff-Id"
+              form={form}
+              withAsterisk
+            />
 
-          <TextInput
-            label="Full Name"
-            name="full_name"
-            placeholder="Enter user name"
-            form={form}
-            withAsterisk
-          />
+            <TextInput
+              label="Full Name"
+              name="full_name"
+              placeholder="Enter user name"
+              form={form}
+              withAsterisk
+            />
 
-          <SelectBox
-            control={form.control}
-            name="user_type"
-            label="Type"
-            options={UserTypeOptions || []}
-            searchable={true}
-            placeholder="Select User Type"
-            emptyMessage="No user type found"
-            withAsterisk
-          />
+            <SelectBox
+              control={form.control}
+              name="user_type"
+              label="Type"
+              options={UserTypeOptions || []}
+              searchable={true}
+              placeholder="Select User Type"
+              emptyMessage="No user type found"
+              withAsterisk
+            />
 
-          <SelectBox
-            control={form.control}
-            name="department_code"
-            label="Department"
-            options={departmentOptions || []}
-            searchable={true}
-            placeholder="Select department"
-            emptyMessage="No departments found"
-            withAsterisk
-          />
+            <SelectBox
+              control={form.control}
+              name="department_code"
+              label="Department"
+              options={departmentOptions || []}
+              searchable={true}
+              placeholder="Select department"
+              emptyMessage="No departments found"
+              withAsterisk
+            />
 
-          <SelectBox
-            control={form.control}
-            name="role_code"
-            label="Role"
-            options={roleOptions || []}
-            searchable={true}
-            placeholder="Select role"
-            emptyMessage="No Roles found"
-            withAsterisk
-          />
+            <SelectBox
+              control={form.control}
+              name="role_code"
+              label="Role"
+              options={roleOptions || []}
+              searchable={true}
+              placeholder="Select role"
+              emptyMessage="No Roles found"
+              withAsterisk
+            />
 
-          <TextInput
-            label="Password"
-            name="password"
-            placeholder="••••••••"
-            type={showPassword ? "text" : "password"}
-            form={form}
-            icon={<Lock className="h-4 w-4" />}
-            rightBtn={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <EyeOff className="h-4 w-4" aria-hidden="true" />
-                )}
-                <span className="sr-only">
-                  {showPassword ? "Hide password" : "Show password"}
-                </span>
-              </Button>
-            }
-            withAsterisk
-          />
+            <TextInput
+              label="Password"
+              name="password"
+              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              form={form}
+              icon={<Lock className="h-4 w-4" />}
+              rightBtn={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  <span className="sr-only">
+                    {showPassword ? "Hide password" : "Show password"}
+                  </span>
+                </Button>
+              }
+              withAsterisk
+            />
 
-          <TextInput
-            label="Confirm Password"
-            name="confirm_password"
-            placeholder="••••••••"
-            type={showConfirmPassword ? "text" : "password"}
-            form={form}
-            icon={<Lock className="h-4 w-4" />}
-            rightBtn={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className=" text-muted-foreground hover:text-foreground"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <EyeOff className="h-4 w-4" aria-hidden="true" />
-                )}
-                <span className="sr-only">
-                  {showConfirmPassword
-                    ? "Hide confirm password"
-                    : "Show confirm password"}
-                </span>
-              </Button>
-            }
-            withAsterisk
-          />
-        </form>
+            <TextInput
+              label="Confirm Password"
+              name="confirm_password"
+              placeholder="••••••••"
+              type={showConfirmPassword ? "text" : "password"}
+              form={form}
+              icon={<Lock className="h-4 w-4" />}
+              rightBtn={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className=" text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  <span className="sr-only">
+                    {showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"}
+                  </span>
+                </Button>
+              }
+              withAsterisk
+            />
+          </form>
+        )}
       </Form>
     </Modal>
   );

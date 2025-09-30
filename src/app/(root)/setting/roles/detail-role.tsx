@@ -17,14 +17,14 @@ interface UserDetailsProps {
   onOpenChange?: (open: boolean) => void;
   hideDefaultTrigger?: boolean;
   onSuccess?: () => void;
-  userId: number | null;
+  roleId: string | null;
 }
 
 export default function DetailsRole({
   open,
   onOpenChange,
   hideDefaultTrigger,
-  userId,
+  roleId,
 }: UserDetailsProps) {
   const message = useMessage();
 
@@ -32,7 +32,7 @@ export default function DetailsRole({
     data: role,
     isLoading: isLoadingRole,
     isError,
-  } = useGetRoleById(userId);
+  } = useGetRoleById(roleId);
 
   return (
     <Modal
@@ -49,7 +49,7 @@ export default function DetailsRole({
       hideDefaultTrigger={hideDefaultTrigger}
     >
       <DetailsView
-        id={userId}
+        id={roleId}
         data={role?.data}
         isLoading={isLoadingRole}
         isError={isError}

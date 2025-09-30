@@ -28,7 +28,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useGetCurrentLoginUser } from "@/api-config/queries/user";
-import { useAuth } from "@/app/contexts/AuthContext";
 import { useMessage } from "@/app/contexts/MessageContext";
 import packageJson from "../../../package.json";
 import { ToggleMode } from "../toggle-mode";
@@ -39,9 +38,8 @@ import { useLogout } from "@/api-config/queries/auth";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { logout } = useAuth();
   const message = useMessage();
-   const { mutate: logoutApi, isPending } = useLogout();
+   const { mutate: logoutApi } = useLogout();
   const { data, isError, error } = useGetCurrentLoginUser();
 
     const [showForgetPasswordModal, setShowForgetPasswordModal] =
@@ -90,7 +88,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-5 w-5 rounded-lg">
-                  <User className=" text-active" />
+                  <User className="text-active" />
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
@@ -126,7 +124,9 @@ export function NavUser() {
                 Version: {packageJson.version}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
+                <DropdownMenuItem
+                  className="cursor-pointer focus:bg-active"
+                  
                 onClick={() => setShowForgetPasswordModal(true)}
               >
                 <RotateCcwKey className=" text-active opacity-80" />

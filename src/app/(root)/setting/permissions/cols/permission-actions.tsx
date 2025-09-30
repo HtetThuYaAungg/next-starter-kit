@@ -22,55 +22,56 @@ import {
 import { useMessage } from "@/app/contexts/MessageContext";
 import { useState } from "react";
 import { RouteGuard } from "@/components/route-guard";
-import { useDeleteDepartment } from "@/api-config/queries/department";
-import { Department } from "@/api-config/services/department";
-import CreateDepartment from "../create-department";
-import DetailsDepartment from "../detail-department";
+import { useDeletePermission } from "@/api-config/queries/permission";
+import { Permission } from "@/api-config/services/permission";
+import CreatePermission from "../create-permission";
+import DetailsPermission from "../detail-permission";
 
-interface DataTableDepartmentActionsProps<TData> {
+
+interface DataTablePermissionActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function DepartmentTableActions<TData>({
+export function PermissionTableActions<TData>({
   row,
-}: DataTableDepartmentActionsProps<TData>) {
-  const department = row.original as Department;
+}: DataTablePermissionActionsProps<TData>) {
+  const permission = row.original as Permission;
 
   const message = useMessage();
   const {
-    mutateAsync: mutateAsyncDeleteDepartment,
-    isPending: isPendingDeleteDepartment,
-  } = useDeleteDepartment();
+    mutateAsync: mutateAsyncDeletePermission,
+    isPending: isPendingDeletePermission,
+  } = useDeletePermission();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
-  const [departmentId, setDepartmentId] = useState<string | null>(null);
+  const [permissionId, setPermissionId] = useState<string | null>(null);
   const [editedDataId, setEditedDataId] = useState<string | null>(null);
 
-  const handleEditDepartment = (departmentId: string) => {
-    setEditedDataId(departmentId);
+  const handleEditPermission = (permissionId: string) => {
+    setEditedDataId(permissionId);
     setIsDrawerOpen(true);
   };
-  const handleCloseEditDepartment = () => {
+  const handleCloseEditPermission = () => {
     setEditedDataId(null);
     setIsDrawerOpen(false);
   };
 
-  const handleDetailDepartment = (departmentId: string) => {
-    setDepartmentId(departmentId);
+  const handleDetailPermission = (permissionId: string) => {
+    setPermissionId(permissionId);
     setIsDetailsDrawerOpen(true);
   };
-  const handleCloseDetailsDepartment = () => {
-    setDepartmentId(null);
+  const handleCloseDetailsPermission = () => {
+    setPermissionId(null);
     setIsDetailsDrawerOpen(false);
   };
 
-  const handleDeleteDepartment = async (id: string) => {
+  const handleDeletePermission = async (id: string) => {
     const loadingId = message.loading("Deleting...", 0);
     try {
-      await mutateAsyncDeleteDepartment(id);
+      await mutateAsyncDeletePermission(id);
       message.remove(loadingId);
-      message.success("Delete department successful!");
+      message.success("Delete permission successful!");
     } catch (error: any) {
       message.remove(loadingId);
       message.error(error?.response.data.message);
@@ -90,24 +91,24 @@ export function DepartmentTableActions<TData>({
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() =>
-              navigator.clipboard.writeText(department.department_code)
+              navigator.clipboard.writeText(permission.module)
             }
           >
             <Copy className="mr-2 h-4 w-4 text-gray-500" />
-            Copy Department Code
+            Copy Module Name
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() =>
-              navigator.clipboard.writeText(department.department_name)
+              navigator.clipboard.writeText(`${permission.module} : ${permission.action}`)
             }
           >
             <Copy className="mr-2 h-4 w-4 text-gray-500" />
-            Copy Department Name
+            Copy Permission Name
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <RouteGuard permissionType="read">
             <DropdownMenuItem
-              onClick={() => handleDetailDepartment(department.id)}
+              onClick={() => handleDetailPermission(permission.id)}
             >
               <ExternalLink className="mr-2 h-4 w-4 text-blue-500" />
               View Details
@@ -115,8 +116,7 @@ export function DepartmentTableActions<TData>({
           </RouteGuard>
           <RouteGuard permissionType="edit">
             <DropdownMenuItem
-              onClick={() => handleEditDepartment(department.id)}
-              disabled={department.department_code === "SYS"}
+              onClick={() => handleEditPermission(permission.id)}
             >
               <Pen className="mr-2 h-4 w-4 text-yellow-500" />
               Edit
@@ -126,10 +126,9 @@ export function DepartmentTableActions<TData>({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive"
-              disabled={department.department_code === "SYS"}
-              onClick={() => handleDeleteDepartment(department.id)}
+              onClick={() => handleDeletePermission(permission.id)}
             >
-              {isPendingDeleteDepartment ? (
+              {isPendingDeletePermission ? (
                 <Loader className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Trash className="mr-2 h-4 w-4 text-red-500" />
@@ -139,20 +138,20 @@ export function DepartmentTableActions<TData>({
           </RouteGuard>
         </DropdownMenuContent>
       </DropdownMenu>
-      <CreateDepartment
+      <CreatePermission
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
         hideDefaultTrigger={true}
         editedDataId={editedDataId}
-        onSuccess={handleCloseEditDepartment}
+        onSuccess={handleCloseEditPermission}
       />
       {isDetailsDrawerOpen && (
-        <DetailsDepartment
+        <DetailsPermission
           open={isDetailsDrawerOpen}
           onOpenChange={setIsDetailsDrawerOpen}
           hideDefaultTrigger={true}
-          departmentId={departmentId}
-          onSuccess={handleCloseDetailsDepartment}
+          permissionId={permissionId}
+          onSuccess={handleCloseDetailsPermission}
         />
       )}
     </>

@@ -9,25 +9,34 @@ export interface RoleCommon {
 }
 
 interface CreatedBy {
-  id: number;
+  id: string;
   email: string;
   full_name: string;
 }
 
 interface UpdatedBy {
-  id: number;
+    id: string;
   email: string;
   full_name: string;
 }
+
+interface DeletedBy {
+  id: string;
+  email: string;
+  full_name: string;
+}
+
 export interface Role {
-  id: number;
+  id: string;
   role_code: string;
   role_name: string;
   permissions: [];
   created_by: CreatedBy;
   updated_by: UpdatedBy;
+  deleted_by: DeletedBy;
   created_at: string;
   updated_at: string;
+  deleted_at: string;
 }
 
 interface AllRole {
@@ -41,7 +50,7 @@ export function getAllCommonRoleList() {
   return apiInstance.get<ApiResponse<RoleCommon[]>>(`/role/common/all`);
 }
 
-export function getAllRolesByFilter(filters: Record<string, string | number>) {
+export function getAllRolesByFilter(filters: Record<string, string>) {
   const queryString = qs.stringify(filters, {
     skipNull: true,
     skipEmptyString: true,
@@ -53,7 +62,7 @@ export function createRole(data: RoleFormValues) {
   return apiInstance.post("/role/new", data);
 }
 
-export function deleteRole(id: number) {
+export function deleteRole(id: string) {
   return apiInstance.delete<ApiResponse<Role>>(`/role/${id}`);
 }
 
@@ -61,6 +70,6 @@ export function updateRole(data: RoleFormValues) {
   return apiInstance.patch(`/role/${data.id}`, data);
 }
 
-export function getRoleById(id: number) {
+export function getRoleById(id: string) {
   return apiInstance.get<ApiResponse<Role>>(`/role/${id}`);
 }

@@ -6,21 +6,24 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import departmentCreateSchema, {
-  DepartmentFormValues,
-} from "./schema/create-department";
+import permissionCreateSchema, {
+  PermissionFormValues,
+} from "./schema/create-permission";
 import { useMessage } from "@/app/contexts/MessageContext";
 import {
-  useCreateDepartment,
-  useGetDepartmentById,
-  useUpdateDepartment,
-} from "@/api-config/queries/department";
+  useCreatePermission,
+  useGetPermissionById,
+  useUpdatePermission,
+} from "@/api-config/queries/permission";
 import Modal from "@/components/modal";
 import BottomBtns from "@/components/modal_bottom_btns";
 import { TextInput } from "@/components/form-inputs/text-input";
-import DepartmentFormSkeleton from "./components/department-form-skeleton";
+import PermissionFormSkeleton from "./components/permission-form-skeleton";
+import { TextareaInput } from '@/components/form-inputs/text-area-input';
+import { action } from "@/lib/constants";
+import { SelectBox } from "@/components/form-inputs/select-box";
 
-interface DepartmentCreationFormProps {
+interface PermissionCreationFormProps {
   // External control props
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -29,42 +32,43 @@ interface DepartmentCreationFormProps {
   editedDataId?: string | null;
 }
 
-const defaultValues: DepartmentFormValues = {
-  department_name: "",
-  department_code: "",
+const defaultValues: PermissionFormValues = {
+  description: "",
+  module: "",
+  action: "",
 };
 
-export default function CreateDepartment({
+export default function CreatePermission({
   open,
   onOpenChange,
   hideDefaultTrigger,
   onSuccess,
   editedDataId,
-}: DepartmentCreationFormProps) {
+}: PermissionCreationFormProps) {
   const message = useMessage();
-  const formId = "department-form";
+  const formId = "permission-form";
 
   const {
-    mutateAsync: mutateAsyncCreateDepartment,
-    isPending: isPendingCreateDepartment,
-  } = useCreateDepartment();
+    mutateAsync: mutateAsyncCreatePermission,
+    isPending: isPendingCreatePermission,
+  } = useCreatePermission();
   const {
-    mutateAsync: mutateAsyncUpdateDepartment,
-    isPending: isPendingUpdateDepartment,
-  } = useUpdateDepartment();
+    mutateAsync: mutateAsyncUpdatePermission,
+    isPending: isPendingUpdatePermission,
+  } = useUpdatePermission();
 
   const {
     data: editedData,
     isLoading: isLoadingEditedData,
     isFetching: isFetchingEditedData,
-  } = useGetDepartmentById(editedDataId || null);
+  } = useGetPermissionById(editedDataId || null);
 
-  const form = useForm<DepartmentFormValues>({
-    resolver: zodResolver(departmentCreateSchema),
+  const form = useForm<PermissionFormValues>({
+    resolver: zodResolver(permissionCreateSchema),
     defaultValues: defaultValues,
   });
 
-  const onSubmit = async (data: DepartmentFormValues) => {
+  const onSubmit = async (data: PermissionFormValues) => {
     const loadingId = message.loading(
       data.id ? "Editing..." : "Creating...",
       0
@@ -72,13 +76,13 @@ export default function CreateDepartment({
     const isEdit = Boolean(data.id);
     try {
       await (isEdit
-        ? mutateAsyncUpdateDepartment(data)
-        : mutateAsyncCreateDepartment(data));
+        ? mutateAsyncUpdatePermission(data)
+        : mutateAsyncCreatePermission(data));
       message.remove(loadingId);
       message.success(
         isEdit
-          ? "Update department successful!"
-          : "Create department successful!"
+          ? "Update permission successful!"
+          : "Create permission successful!"
       );
       form.reset();
       onSuccess();
@@ -98,16 +102,16 @@ export default function CreateDepartment({
 
   return (
     <Modal
-      title={`${editedDataId ? "Edit Department" : "Create New Department"}`}
+      title={`${editedDataId ? "Edit Permission" : "Create New Permission"}`}
       description={`${
         editedDataId
-          ? "Edit existing department ..."
-          : "Create new department for the admin portal"
+          ? "Edit existing permission ..."
+          : "Create new permission for the admin portal"
       }`}
       triggerButton={
         <Button className="gap-2">
           <PlusCircle className="h-3 w-3" />
-          Create Department
+          Create Permission
         </Button>
       }
       width="lg"
@@ -117,7 +121,7 @@ export default function CreateDepartment({
       hideDefaultTrigger={hideDefaultTrigger}
       bottomButton={
         <BottomBtns
-          isPending={isPendingCreateDepartment || isPendingUpdateDepartment}
+          isPending={isPendingCreatePermission || isPendingUpdatePermission}
           formId={formId}
           form={form}
           editedData={!!editedDataId}
@@ -127,26 +131,33 @@ export default function CreateDepartment({
     >
       <Form {...form}>
         {isLoadingEditedData || isFetchingEditedData ? (
-          <DepartmentFormSkeleton />
+          <PermissionFormSkeleton />
         ) : (
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-3 py-2"
             id={formId}
           >
-            <TextInput
-              label="Department Code"
-              name="department_code"
-              placeholder="Enter department code"
+              <TextInput
+                label="Module Name"
+                name="module"
+                placeholder="Enter module name"
+                form={form}
+                withAsterisk
+              />
+              <SelectBox
+                label="Action"
+                name="action"
+                placeholder="Select action"
+                control={form.control}
+                withAsterisk
+                options={action || []}
+              />
+            <TextareaInput
+              label="Description"
+              name="description"
+              placeholder="Enter permission description (optional)"
               form={form}
-              withAsterisk
-            />
-            <TextInput
-              label="Department Name"
-              name="department_name"
-              placeholder="Enter department name"
-              form={form}
-              withAsterisk
             />
           </form>
         )}

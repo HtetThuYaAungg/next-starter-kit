@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const departmentCreateSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   department_code: z
     .string()
     .min(2, "Department code must be at least 2 characters"),

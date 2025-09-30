@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DetailsViewProps<T> {
-  id: number | null;
+  id: string | null;
   data: T | undefined;
   isLoading: boolean;
   isError: boolean;

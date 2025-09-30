@@ -21,7 +21,7 @@ interface UpdatedBy {
 }
 
 export interface Department {
-  id: number;
+  id: string;
   department_name: string;
   department_code: string;
   created_by: CreatedBy;
@@ -59,7 +59,7 @@ export function createDepartment(data: DepartmentFormValues) {
   return apiInstance.post("/department/new", data);
 }
 
-export function deleteDepartment(id: string | number) {
+export function deleteDepartment(id: string) {
   return apiInstance.delete<ApiResponse<Department>>(`/department/${id}`);
 }
 
@@ -67,6 +67,6 @@ export function updateDepartment(data: DepartmentFormValues) {
   return apiInstance.patch(`/department/${data.id}`, data);
 }
 
-export function getDepartmentById(id: number) {
+export function getDepartmentById(id: string) {
   return apiInstance.get<ApiResponse<Department>>(`/department/${id}`);
 }

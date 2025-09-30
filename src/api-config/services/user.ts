@@ -8,37 +8,37 @@ import { ChangePasswordFormValues } from "@/app/(root)/setting/users/schema/chan
 
 // types/user.ts
 interface Department {
-  id: number;
+  id: string;
   department_code: string;
   department_name: string;
 }
 
 interface Role {
-  id: number;
+  id: string;
   role_code: string;
   role_name: string;
 }
 
 interface CreatedBy {
-  id: number;
+  id: string;
   email: string;
   full_name: string;
 }
 
 interface UpdatedBy {
-  id: number;
+  id: string;
   email: string;
   full_name: string;
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   staff_id: string;
   full_name: string;
   status: string;
-  department_id: number;
-  role_id: number;
+  department_id: string;
+  role_id: string;
   department: Department;
   role: Role;
   created_by: CreatedBy;
@@ -72,11 +72,11 @@ export function createUser(data: UserFormValues) {
   return apiInstance.post("/user/register", data);
 }
 
-export function deleteUser(id: string | number) {
+export function deleteUser(id: string) {
   return apiInstance.delete<ApiResponse<User>>(`/user/${id}`);
 }
 
-export function getUserById(id: number) {
+export function getUserById(id: string) {
   return apiInstance.get<ApiResponse<User>>(`/user/${id}`);
 }
 

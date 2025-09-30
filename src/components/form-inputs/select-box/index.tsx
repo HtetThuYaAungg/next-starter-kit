@@ -78,36 +78,48 @@ const colSpanMap: Record<number, string> = {
   12: "col-span-12",
 }
 
-// Custom styles for react-select to match the existing design
+// Custom styles for react-select to match the existing design system
 const customSelectStyles: StylesConfig<SelectOption, boolean> = {
   control: (provided, state) => ({
     ...provided,
     minHeight: "36px",
+    height: "36px",
     border: state.isFocused
-      ? "1px solid hsl(var(--ring))"
-      : "1px solid hsl(var(--border))",
-    borderRadius: "6px",
+      ? "1px solid var(--ring)"
+      : "1px solid var(--border)",
+    borderRadius: "calc(var(--radius) - 2px)",
     backgroundColor: state.isDisabled 
-      ? "hsl(var(--input) / 0.3)" // dark:bg-input/30 equivalent
-      : "hsl(var(--background))",
-    boxShadow: state.isFocused ? "0 0 0 2px hsl(var(--ring) / 0.2)" : "none",
+      ? "var(--input) / 0.3"
+      : "var(--background)",
+    boxShadow: state.isFocused 
+      ? "0 0 0 3px var(--ring) / 0.2" 
+      : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     "&:hover": {
       border: state.isDisabled 
-        ? "1px solid hsl(var(--border))"
-        : "1px solid hsl(var(--ring))",
+        ? "1px solid var(--border)"
+        : "1px solid var(--ring)",
     },
-    cursor: state.isDisabled ? "not-allowed" : "default", // disabled:cursor-not-allowed
-    opacity: state.isDisabled ? 0.5 : 1, // disabled:opacity-50
-    pointerEvents: state.isDisabled ? "none" : "auto", // disabled:pointer-events-none
+    cursor: state.isDisabled ? "not-allowed" : "pointer",
+    opacity: state.isDisabled ? 0.5 : 1,
+    pointerEvents: state.isDisabled ? "none" : "auto",
+    transition: "all 0.2s ease-in-out",
+    fontSize: "14px",
+    fontFamily: "inherit",
   }),
   valueContainer: (provided) => ({
     ...provided,
     padding: "2px 8px",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
   }),
   input: (provided) => ({
     ...provided,
-    margin: "0px",
-    color: "hsl(var(--foreground))",
+    margin: "0",
+    padding: "0",
+    color: "var(--foreground)",
+    fontSize: "14px",
+    fontFamily: "inherit",
   }),
   indicatorSeparator: () => ({
     display: "none",
@@ -115,70 +127,104 @@ const customSelectStyles: StylesConfig<SelectOption, boolean> = {
   indicatorsContainer: (provided) => ({
     ...provided,
     padding: "0 8px",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
   }),
   dropdownIndicator: (provided, state) => ({
     ...provided,
-    color: "hsl(var(--muted-foreground))",
+    color: "var(--muted-foreground)",
     cursor: "pointer",
     pointerEvents: "auto",
     transform: state.selectProps.menuIsOpen ? "rotate(180deg)" : "rotate(0deg)",
-    transition: "transform 0.2s ease",
+    transition: "transform 0.2s ease, color 0.2s ease",
     "&:hover": {
-      color: "hsl(var(--foreground))",
+      color: "var(--foreground)",
     },
+    padding: "0",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   }),
   clearIndicator: (provided) => ({
     ...provided,
-    color: "hsl(var(--muted-foreground))",
+    color: "var(--muted-foreground)",
+    cursor: "pointer",
     "&:hover": {
-      color: "hsl(var(--foreground))",
+      color: "var(--foreground)",
+      backgroundColor: "var(--accent)",
     },
+    borderRadius: "50%",
+    padding: "2px",
+    transition: "all 0.2s ease",
   }),
   menu: (provided) => ({
     ...provided,
-    backgroundColor: "hsl(var(--popover))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "6px",
-    boxShadow:
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05)",
-    zIndex: 9999,
-    position: "absolute",
+    backgroundColor: "var(--popover)",
+    border: "1px solid var(--border)",
+    borderRadius: "calc(var(--radius) - 2px)",
+    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05)",
+    zIndex: 50,
+    marginTop: "4px",
+    overflow: "hidden",
+    backdropFilter: "blur(8px)",
   }),
   menuPortal: (provided) => ({
     ...provided,
-    zIndex: 9999,
-    position: "fixed",
+    zIndex: 50,
   }),
   menuList: (provided) => ({
     ...provided,
     padding: "4px",
+    maxHeight: "200px",
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "2px",
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "transparent",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      background: "var(--border)",
+      borderRadius: "2px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      background: "var(--muted-foreground)",
+    },
   }),
   option: (provided, state) => ({
     ...provided,
     backgroundColor: state.isSelected
-      ? "hsl(var(--primary))"
+      ? "var(--primary)"
       : state.isFocused
-      ? "hsl(var(--accent))"
+      ? "var(--accent)"
       : "transparent",
     color: state.isSelected
-      ? "hsl(var(--primary-foreground))"
-      : "hsl(var(--foreground))",
-    borderRadius: "4px",
-    margin: "2px 0",
+      ? "var(--primary-foreground)"
+      : "var(--foreground)",
+    borderRadius: "calc(var(--radius) - 4px)",
+    margin: "2px 0px",
     padding: "8px 12px",
     cursor: "pointer",
-    pointerEvents: "auto",
-    zIndex: 10000,
+    fontSize: "14px",
+    fontFamily: "inherit",
+    transition: "all 0.15s ease",
     "&:hover": {
       backgroundColor: state.isSelected
-        ? "hsl(var(--primary))"
-        : "hsl(var(--accent))",
+        ? "var(--primary)"
+        : "var(--accent)",
+    },
+    "&:active": {
+      backgroundColor: state.isSelected
+        ? "var(--primary)"
+        : "var(--accent)",
     },
   }),
   placeholder: (provided) => ({
     ...provided,
-    color: "hsl(var(--muted-foreground))",
+    color: "var(--muted-foreground)",
     fontSize: "14px",
+    fontFamily: "inherit",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -186,8 +232,9 @@ const customSelectStyles: StylesConfig<SelectOption, boolean> = {
   }),
   singleValue: (provided) => ({
     ...provided,
-    color: "hsl(var(--foreground))",
+    color: "var(--foreground)",
     fontSize: "14px",
+    fontFamily: "inherit",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -195,26 +242,45 @@ const customSelectStyles: StylesConfig<SelectOption, boolean> = {
   }),
   multiValue: (provided) => ({
     ...provided,
-    backgroundColor: "hsl(var(--secondary))",
-    borderRadius: "4px",
+    backgroundColor: "var(--secondary)",
+    borderRadius: "calc(var(--radius) - 4px)",
+    margin: "2px 4px 2px 0",
+    fontSize: "12px",
   }),
   multiValueLabel: (provided) => ({
     ...provided,
-    color: "hsl(var(--secondary-foreground))",
+    color: "var(--secondary-foreground)",
     fontSize: "12px",
+    fontFamily: "inherit",
+    padding: "2px 6px",
   }),
   multiValueRemove: (provided) => ({
     ...provided,
-    color: "hsl(var(--secondary-foreground))",
+    color: "var(--secondary-foreground)",
+    cursor: "pointer",
+    borderRadius: "0 calc(var(--radius) - 4px) calc(var(--radius) - 4px) 0",
+    padding: "2px 4px",
     "&:hover": {
-      backgroundColor: "hsl(var(--destructive))",
-      color: "hsl(var(--destructive-foreground))",
+      backgroundColor: "var(--destructive)",
+      color: "var(--destructive-foreground)",
     },
+    transition: "all 0.15s ease",
   }),
   noOptionsMessage: (provided) => ({
     ...provided,
+    color: "var(--muted-foreground)",
+    fontSize: "14px",
+    fontFamily: "inherit",
+    padding: "12px",
+    textAlign: "center",
+  }),
+  loadingMessage: (provided) => ({
+    ...provided,
     color: "hsl(var(--muted-foreground))",
     fontSize: "14px",
+    fontFamily: "inherit",
+    padding: "12px",
+    textAlign: "center",
   }),
 };
 
@@ -322,7 +388,7 @@ export function SelectBox<
               )}
             </label>
           )}
-          <div className={cn(inputSpanClass, "relative bg-background")}>
+          <div className={cn(inputSpanClass, "relative")}>
             <FormControl>
               <Select
                 value={

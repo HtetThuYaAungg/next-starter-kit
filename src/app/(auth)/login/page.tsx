@@ -16,9 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/api-config/queries/auth";
 import Card from "@/components/card";
-import UWU from "../../../../public/logo/uwu.png";
 import { useMessage } from "@/app/contexts/MessageContext";
 import loginSchema, { LoginFormValues } from "./schema/login";
+import LogoIcon from "@/components/svg-icons/logo";
 
 export default function LoginForm() {
   const message = useMessage();
@@ -63,10 +63,10 @@ export default function LoginForm() {
 
       <div className="relative z-10 h-screen flex items-center justify-center">
         <Card
-          imageSrc={UWU}
-          imageAlt="Starter Kit Logo"
+          imageSrc={<LogoIcon className="w-40 h-40" />}
+          imageAlt="Logo"
           description="Login to your account"
-          className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl max-w-lg w-full hover:shadow-2xl transition-shadow pt-0"
+          className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl max-w-lg w-full hover:shadow-2xl transition-shadow "
         >
           <Form {...form}>
             <form

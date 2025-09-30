@@ -7,12 +7,11 @@ import {
   CardTitle,
 } from "../ui/card";
 import Image from "next/image";
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 interface ICardComponentProps {
   title?: string;
   description?: string;
-  imageSrc?: string | StaticImport;
+  imageSrc?: string | React.ReactNode;
   imageAlt?: string;
   className?: string;
   children: ReactNode;
@@ -27,13 +26,17 @@ const Card = (props: ICardComponentProps) => {
         <CardHeader className="space-y-1 text-center">
           {imageSrc && (
             <CardTitle className="flex justify-center">
-              <Image
+              {typeof imageSrc === "string" ? (
+                <Image
                 width={250}
                 height={250}
                 src={imageSrc}
                 alt={imageAlt ?? ""}
                 priority={false}
               />
+              ) : (
+                imageSrc
+              )}
             </CardTitle>
           )}
           {title && <CardTitle className="text-2xl">{title}</CardTitle>}

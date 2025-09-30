@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const roleCreateSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   role_code: z.string().min(2, "Role code must be at least 2 characters"),
   role_name: z.string().min(3, "Role name must be at least 3 characters"),
   permissions: z.array(

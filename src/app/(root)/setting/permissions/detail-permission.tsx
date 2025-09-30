@@ -2,40 +2,40 @@
 
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { useGetDepartmentById } from "@/api-config/queries/department";
+import { useGetPermissionById } from "@/api-config/queries/permission";
 import { DetailsView } from "@/components/details/detail-view";
-import { DepartmentDetailsRender } from "./components/department-detail-render";
 import Modal from "@/components/modal";
+import { PermissionDetailsRender } from "./components/permission-detail-render";
 
-interface DepartmentDetailsProps {
+interface PermissionDetailsProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   hideDefaultTrigger?: boolean;
   onSuccess?: () => void;
-  departmentId: string | null;
+  permissionId: string | null;
 }
 
-export default function DetailsDepartment({
+export default function DetailsPermission({
   open,
   onOpenChange,
   hideDefaultTrigger,
   onSuccess,
-  departmentId,
-}: DepartmentDetailsProps) {
+  permissionId,
+}: PermissionDetailsProps) {
   const {
-    data: department,
-    isLoading: isDepartmentLoading,
+    data: permission,
+    isLoading: isPermissionLoading,
     isError,
-  } = useGetDepartmentById(departmentId);
+  } = useGetPermissionById(permissionId);
 
   return (
     <Modal
-      title="Department Details"
-      description="Details for a department"
+      title="Permission Details"
+      description="Details for a permission"
       triggerButton={
         <Button className="gap-2">
           <PlusCircle className="h-3 w-3" />
-          Details Department
+          Details Permission
         </Button>
       }
       open={open}
@@ -43,11 +43,11 @@ export default function DetailsDepartment({
       hideDefaultTrigger={hideDefaultTrigger}
     >
       <DetailsView
-        id={departmentId}
-        data={department?.data}
-        isLoading={isDepartmentLoading}
+        id={permissionId}
+        data={permission?.data}
+        isLoading={isPermissionLoading}
         isError={isError}
-        render={(data) => <DepartmentDetailsRender data={data} />}
+        render={(data) => <PermissionDetailsRender data={data} />}
       />
     </Modal>
   );

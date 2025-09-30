@@ -21,7 +21,7 @@ export function useGetAllCommonRoleList() {
 }
 
 export function useGetAllRolesByFilter(
-  filters: Record<string, string | number>
+  filters: Record<string, string>
 ) {
   return useQuery({
     queryKey: roleKey.filters(filters || {}),
@@ -52,7 +52,7 @@ export function useUpdateRole() {
   });
 }
 
-export function useGetRoleById(id: number | null) {
+export function useGetRoleById(id: string | null) {
   return useQuery({
     queryKey: roleKey.detail(id),
     queryFn: () => {
@@ -68,7 +68,7 @@ export function useGetRoleById(id: number | null) {
 export function useDeleteRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => deleteRole(id),
+    mutationFn: (id: string) => deleteRole(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roleKey.filters({}) });
     },

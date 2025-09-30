@@ -122,3 +122,28 @@ export const initialPermissions: Permissions = [
     ],
   },
 ];
+
+export const permission_actions = ["create", "edit", "delete", "list", "read"];
+
+export const action = [
+  {
+    value: "create",
+    label: "Create",
+  },
+  {
+    value: "edit",
+    label: "Edit",
+  },
+  {
+    value: "delete",
+    label: "Delete",
+  },
+  {
+    value: "list",
+    label: "List",
+  },
+  {
+    value: "read",
+    label: "Read",
+  },
+];

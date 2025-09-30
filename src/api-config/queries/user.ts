@@ -35,7 +35,7 @@ export function useGetAllUsersByFilter(
   });
 }
 
-export function useGetUserById(id: number | null) {
+export function useGetUserById(id: string | null) {
   return useQuery({
     queryKey: userKey.detail(id),
     queryFn: () => {
@@ -72,7 +72,7 @@ export function useUpdateUser() {
 export function useDeleteUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string | number) => deleteUser(id),
+    mutationFn: (id: string) => deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKey.filters({}) });
     },

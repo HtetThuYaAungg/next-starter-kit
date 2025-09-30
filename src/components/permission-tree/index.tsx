@@ -3,14 +3,15 @@
 import { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import {
-  ChevronRight,
-  ChevronDown,
-  Archive,
-  UserRoundCog,
-} from "lucide-react";
+import { ChevronRight, ChevronDown, Archive, UserRoundCog } from "lucide-react";
 import { useController, type Control } from "react-hook-form";
-import type { Action, Menu, Permissions, SubMenu } from "@/lib/constants";
+import {
+  permission_actions,
+  type Action,
+  type Menu,
+  type Permissions,
+  type SubMenu,
+} from "@/lib/constants";
 
 // Define the state for checked items
 type CheckedState = {
@@ -130,8 +131,8 @@ export default function PermissionTree({
             actions.delete ||
             actions.edit ||
             actions.list ||
-            actions.read
-            // Include other actions if needed
+            actions.read;
+          // Include other actions if needed
 
           if (subMenuChecked) {
             anyChecked = true;
@@ -379,7 +380,7 @@ export default function PermissionTree({
         menu._self.list &&
         menu._self.read
         // Include other actions if needed
-        );
+      );
     }
 
     // If this menu has submenus
@@ -531,9 +532,9 @@ export default function PermissionTree({
           </div>
         </div>
 
-        <div className="ml-14 grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
-          {["create", "edit", "delete", "list"].map((action) => (
-            <div key={action} className="flex items-center">
+        <div className="ml-14 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-1">
+          {permission_actions.map((action) => (
+            <div key={action as keyof Action} className="flex items-center">
               <Checkbox
                 id={`action-${menuName}-${subMenu.menuName}-${action}`}
                 disabled={disabled}
@@ -605,9 +606,9 @@ export default function PermissionTree({
           </div>
         </div>
 
-        <div className="ml-14 grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
-          {["create", "edit", "delete", "list"].map((action) => (
-            <div key={action} className="flex items-center">
+        <div className="ml-14 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-1">
+          {permission_actions.map((action) => (
+            <div key={action as keyof Action} className="flex items-center">
               <Checkbox
                 id={`action-${menu.menuName}-${action}`}
                 disabled={disabled}

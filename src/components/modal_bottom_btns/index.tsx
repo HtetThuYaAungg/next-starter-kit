@@ -1,7 +1,4 @@
 import {
-  Eraser,
-  Gavel,
-  ListRestart,
   Loader,
   PlusCircle,
   SquarePen,
@@ -17,7 +14,8 @@ interface BottomBtnsProps {
   handleReset?: () => void;
   isDisabled?: boolean;
   confirmText?: string;
-  isRollover?: boolean;
+  cancelText?: string;
+  resetText?: string;
 }
 
 const BottomBtns = ({
@@ -28,17 +26,17 @@ const BottomBtns = ({
   form,
   handleReset,
   confirmText,
-  isRollover,
+  cancelText = "Cancel",
+  resetText = "Reset",
 }: BottomBtnsProps) => {
   return (
     <div className="flex w-full items-center justify-end space-x-2">
       <Button
         type="button"
         onClick={handleReset ? handleReset : () => form.reset()}
-        variant={"secondary"}
+        variant={"outline"}
       >
-        {editedData ? <ListRestart /> : isRollover ? <Eraser /> : <Eraser />}
-        {editedData ? "Reset" : isRollover ? "Reset" : "Cancel"}
+        {editedData ? resetText : cancelText}
       </Button>
       <Button
         type="submit"
@@ -47,20 +45,18 @@ const BottomBtns = ({
         disabled={isPending || isDisabled}
       >
         {isPending ? (
-          <Loader />
+          <Loader className="animate-spin"/>
         ) : (
           <>
             {editedData ? (
               <SquarePen />
-            ) : isRollover ? (
-              <Gavel />
             ) : (
               <PlusCircle />
             )}
           </>
         )}
         {confirmText ||
-          (editedData ? "Update" : isRollover ? "Rollover" : "Create")}
+          (editedData ? "Update" : "Create")}
       </Button>
     </div>
   );

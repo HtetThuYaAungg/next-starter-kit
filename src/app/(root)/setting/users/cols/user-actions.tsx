@@ -45,36 +45,31 @@ export function UserTableActions<TData>({
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
 
   const [userData, setUserData] = useState<UserEditFormValues | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [editedDataId, setEditedDataId] = useState<string | null>(null);
 
+  const handleEditUser = (userId: string) => {
+    setEditedDataId(userId);
+    setIsDrawerOpen(true);
+  };
   const handleCloseEditUser = () => {
+    setEditedDataId(null);
     setIsDrawerOpen(false);
   };
+
 
   const handleCloseDetailsUser = () => {
     setIsDetailsDrawerOpen(false);
   };
 
-  const handleEditUser = (user: User) => {
-    setUserData({
-      id: user.id,
-      email: user.email,
-      staff_id: user.staff_id,
-      full_name: user.full_name,
-      department_code: user.department.department_code,
-      role_code: user.role.role_code,
-      status: user.status,
-      user_type: user.user_type,
-    });
-    setIsDrawerOpen(true);
-  };
 
-  const handleDetailUser = (userId: number) => {
+
+  const handleDetailUser = (userId: string) => {
     setUserId(userId);
     setIsDetailsDrawerOpen(true);
   };
 
-  const handleDeleteUser = async (id: string | number) => {
+  const handleDeleteUser = async (id: string) => {
     const loadingId = message.loading("Deleting...", 0);
     try {
       await mutateAsyncDeleteUser(id);
@@ -116,7 +111,7 @@ export function UserTableActions<TData>({
           </RouteGuard>
           <RouteGuard permissionType="edit">
             <DropdownMenuItem
-              onClick={() => handleEditUser(user)}
+              onClick={() => handleEditUser(user.id)}
               disabled={user.role.role_code === "SYS_ADMIN"}
             >
               <Pen className="mr-2 h-4 w-4 text-yellow-500" />
@@ -144,7 +139,7 @@ export function UserTableActions<TData>({
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
         hideDefaultTrigger={true}
-        editedData={userData}
+        editedDataId={editedDataId}
         onSuccess={handleCloseEditUser}
       />
       {isDetailsDrawerOpen && (

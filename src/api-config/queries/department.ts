@@ -53,7 +53,7 @@ export function useUpdateDepartment() {
   });
 }
 
-export function useGetDepartmentById(id: number | null) {
+export function useGetDepartmentById(id: string | null) {
   return useQuery({
     queryKey: departmentKey.detail(id),
     queryFn: () => {
@@ -69,7 +69,7 @@ export function useGetDepartmentById(id: number | null) {
 export function useDeleteDepartment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string | number) => deleteDepartment(id),
+    mutationFn: (id: string) => deleteDepartment(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: departmentKey.filters({}) });
     },

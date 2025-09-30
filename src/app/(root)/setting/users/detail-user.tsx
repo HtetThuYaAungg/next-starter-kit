@@ -13,7 +13,7 @@ interface UserDetailsProps {
   onOpenChange?: (open: boolean) => void;
   hideDefaultTrigger?: boolean;
   onSuccess?: () => void;
-  userId: number | null;
+  userId: string | null;
 }
 
 export default function DetailsUser({

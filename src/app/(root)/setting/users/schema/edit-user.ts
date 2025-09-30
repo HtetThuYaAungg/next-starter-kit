@@ -3,7 +3,7 @@ import { UserTypeEnum } from "./create-user";
 
 export const userEditSchema = z
   .object({
-    id: z.number().optional(),
+    id: z.string().optional(),
     email: z.string().email("Invalid email format"),
     staff_id: z.string().min(3, "Staff ID must be at least 3 characters"),
     full_name: z.string().min(2, "Full name must be at least 2 characters"),
