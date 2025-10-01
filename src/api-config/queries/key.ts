@@ -26,6 +26,7 @@ export const roleKey = {
 
 export const permissionKey = {
   all: ["permission"] as const,
+  userPermission: ["user-permission"] as const,
   detail: (id: string | null) => [...permissionKey.all, id, "detail"] as const,
   filters: (filters: Record<string, string | number>) =>
     [...permissionKey.all, "list", ...Object.values(filters)] as const,
