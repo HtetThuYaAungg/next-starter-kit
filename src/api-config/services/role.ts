@@ -50,7 +50,7 @@ export function getAllCommonRoleList() {
   return apiInstance.get<ApiResponse<RoleCommon[]>>(`/role/common/all`);
 }
 
-export function getAllRolesByFilter(filters: Record<string, string>) {
+export function getAllRolesByFilter(filters: Record<string, string|number>) {
   const queryString = qs.stringify(filters, {
     skipNull: true,
     skipEmptyString: true,
