@@ -21,7 +21,7 @@ export function useGetAllCommonRoleList() {
 }
 
 export function useGetAllRolesByFilter(
-  filters: Record<string, string>
+  filters: Record<string, string|number>
 ) {
   return useQuery({
     queryKey: roleKey.filters(filters || {}),
